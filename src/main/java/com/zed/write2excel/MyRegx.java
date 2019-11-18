@@ -10,33 +10,35 @@ public class MyRegx {
 
     HashMap<String, String> map_check = new HashMap<>();
 
-    private static final String reg_name = "showName\":\".*?\"";
+    private static final String reg_json_string = "\\[.*?\\]";
 
-    private static final String reg_value = "0\\.[0-9]{8}";
+    private static final String reg_name = "tagValueName\":\".*?\"";
 
-    private static final String reg_total_name = "name\\\":\\\".*?\\\"";
+    private static final String reg_value = "rate\":.*?,";
 
-    public HashMap<String,HashMap<String, String>> analyzeString(String str) throws Exception {
-        HashMap<String, String> map = new HashMap<>();
+    private static final String reg_total_name = "tagName\":\".*?\"";
 
-        List<String> name = new ArrayList<>();
-        List<String> value = new ArrayList<>();
+    public HashMap<String,HashMap<String, Float>> analyzeString(String json) throws Exception {
+
+        HashMap<String, HashMap<String, Float>> map1 = new HashMap<>();
+        List<String> tag_name_total = new ArrayList<>();
         Pattern pattern_name = Pattern.compile(reg_name);
         Pattern pattern_value = Pattern.compile(reg_value);
         Pattern pattern_total_name = Pattern.compile(reg_total_name);
+        Pattern pattern_json_string = Pattern.compile(reg_json_string);
 
-        Matcher matcher_name = pattern_name.matcher(str);
-        Matcher matcher_value = pattern_value.matcher(str);
-        Matcher matcher_total_name = pattern_total_name.matcher(str);
 
-        String tagName = null;
+        Matcher matcher_json_string = pattern_json_string.matcher(json);
+
+        Matcher matcher_total_name = pattern_total_name.matcher(json);
         while (matcher_total_name.find()) {
             String total_name = matcher_total_name.group();
-            if ("name\":\"rate\"".equals(total_name))
-                continue;
-            if ("name\":\"tgi\"".equals(total_name))
-                continue;
-            tagName = total_name.substring(7, total_name.length() - 1);
+//            if ("name\":\"rate\"".equals(total_name))
+//                continue;
+//            if ("name\":\"tgi\"".equals(total_name))
+//                continue;
+            String tagName = null;
+            tagName = total_name.substring(10, total_name.length() - 1);
             switch (tagName) {
                 case "pref_cosmetics":
                     tagName = "彩妆功效需求";
@@ -53,7 +55,7 @@ public class MyRegx {
                 case "interest_prefer":
                     tagName = "兴趣爱好";
                     break;
-                case  "common_receive_province_180d":
+                case "common_receive_province_180d":
                     tagName = "所在省份";
                     break;
                 case "pred_age_level":
@@ -99,35 +101,55 @@ public class MyRegx {
                     tagName = "大快消行业";
                     break;
             }
+            tag_name_total.add(tagName);
         }
 
-        //add to list to check total count
-        while (matcher_value.find()) {
+        int count = 0;
+        while (matcher_json_string.find()) {
+            String tagName_temp = tag_name_total.get(count++);
+            HashMap<String, Float> map = new HashMap<>();
+            List<String> name = new ArrayList<>();
+            List<Float> value = new ArrayList<>();
+            String tagName = null;
+
+            String str = matcher_json_string.group();
+            Matcher matcher_name = pattern_name.matcher(str);
+            Matcher matcher_value = pattern_value.matcher(str);
+            //add to list to check total count
+            while (matcher_value.find()) {
 //            String substring = matcher_value.group().substring(12);
-            value.add(matcher_value.group());
-        }
-        while (matcher_name.find()) {
-            String substring = matcher_name.group().substring(11);
-            String sub = substring.substring(0, substring.length() - 1);
-            name.add(sub);
-        }
-//        System.out.println("name"+name.size());
-//        System.out.println("value"+value.size());
-        if (name.size() != value.size())
-            System.out.println("does not match");
-        else for (int i = 0; i < name.size(); i++) {
-            String second_tag_name = name.get(i);
+                String rate = matcher_value.group().substring(6, matcher_value.group().length() - 1);
+                float f = Float.parseFloat(rate) / 100;
+                value.add(f);
+            }
+            while (matcher_name.find()) {
+                String sub = matcher_name.group().substring(15, matcher_name.group().length() - 1);
+                name.add(sub);
+            }
+            if (name.size() != value.size())
+                System.out.println("does not match");
+            else {
+                for (int i = 0; i < name.size(); i++) {
+                    String second_tag_name = name.get(i);
 //            if (!set.add(second_tag_name))
 //                second_tag_name = tagName + "-" + second_tag_name;
-            if (second_tag_name.contains("未知")||
-            tagName.contains("彩妆")||
-            tagName.contains("护肤"))
-                second_tag_name = tagName + "-" + second_tag_name;
+                    if (second_tag_name.contains("未知") ||
+                            tagName_temp.contains("彩妆") ||
+                            tagName_temp.contains("护肤"))
+                        second_tag_name = tagName_temp + "-" + second_tag_name;
 
-            map.put(second_tag_name,value.get(i));
+                    map.put(second_tag_name, value.get(i));
+                }
+            }
+            map1.put(tagName_temp, map);
         }
-        HashMap<String, HashMap<String, String>> map1 = new HashMap<>();
-        map1.put(tagName, map);
+
+
+
+
+//        System.out.println("name"+name.size());
+//        System.out.println("value"+value.size());
+
         return map1;
     }
 }

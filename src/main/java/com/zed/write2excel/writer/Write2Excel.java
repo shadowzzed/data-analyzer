@@ -29,7 +29,7 @@ public class Write2Excel {
 
     private static int count = 0;
 
-    public void write(HashMap<String,HashMap<String, String>> map) throws IOException {
+    public void write(HashMap<String,HashMap<String, Float>> map) throws IOException {
         FileInputStream fs;
         fs = new FileInputStream(url);
         POIFSFileSystem ps=new POIFSFileSystem(fs); //使用POI提供的方法得到excel的信息
@@ -40,12 +40,12 @@ public class Write2Excel {
             sheet = wb.createSheet(sheetName);
 //        count++;
         boolean flag = true;
-        for (Map.Entry<String, HashMap<String, String>> entry : map.entrySet()) {
+        for (Map.Entry<String, HashMap<String, Float>> entry : map.entrySet()) {
             Row row = sheet.createRow(count);
             Cell cell = row.createCell(0);
             cell.setCellValue(entry.getKey());
-            HashMap<String, String> entryValueMap = entry.getValue();
-            for (Map.Entry<String, String> entryValue: entryValueMap.entrySet()) {
+            HashMap<String, Float> entryValueMap = entry.getValue();
+            for (Map.Entry<String, Float> entryValue: entryValueMap.entrySet()) {
 //                Row row1 = sheet.getRow(count++);
 //                if (row1 == null)
                 Row row1;

@@ -18,7 +18,7 @@ public class TestMain {
         for (String path:paths) {
             String[] content = FileUtils.getContent(path);
             for (String str: content) {
-                HashMap<String, HashMap<String, String>> map = myRegx.analyzeString(str);
+                HashMap<String, HashMap<String, Float>> map = myRegx.analyzeString(str);
                 writer.write(map);
             }
         }
