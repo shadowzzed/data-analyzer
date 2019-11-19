@@ -14,7 +14,7 @@ public class TestMain {
     public static void main(String[] args) throws Exception {
         MyRegx myRegx = new MyRegx();
         Write2Excel writer = new Write2Excel();
-        String[] paths = FileUtils.getFiles("D:\\logs\\data");
+        String[] paths = FileUtils.getFiles(ConstentConfig.READPATH);
         for (String path:paths) {
             String[] content = FileUtils.getContent(path);
             for (String str: content) {
