@@ -2,6 +2,7 @@ package com.zed.write2excel;
 
 import com.zed.write2excel.utils.FileUtils;
 import com.zed.write2excel.writer.Write2Excel;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +15,7 @@ public class TestMain {
     public static void main(String[] args) throws Exception {
         MyRegx myRegx = new MyRegx();
         Write2Excel writer = new Write2Excel();
-        String[] paths = FileUtils.getFiles("D:\\logs\\data");
+        String[] paths = FileUtils.getFiles(ConstentConfig.READPATH);
         for (String path:paths) {
             String[] content = FileUtils.getContent(path);
             for (String str: content) {

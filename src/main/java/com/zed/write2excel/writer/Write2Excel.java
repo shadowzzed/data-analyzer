@@ -1,5 +1,6 @@
 package com.zed.write2excel.writer;
 
+import com.zed.write2excel.ConstentConfig;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -25,13 +26,13 @@ public class Write2Excel {
 
     private static String sheetName = "test";
 
-    private static String url = "D:\\logs\\test1.xls";
+//    private static String url = "D:\\logs\\test1.xls";
 
     private static int count = 0;
 
     public void write(HashMap<String,HashMap<String, Float>> map) throws IOException {
         FileInputStream fs;
-        fs = new FileInputStream(url);
+        fs = new FileInputStream(ConstentConfig.WRITEPATH);
         POIFSFileSystem ps=new POIFSFileSystem(fs); //使用POI提供的方法得到excel的信息
         HSSFWorkbook wb=new HSSFWorkbook(ps);
 
@@ -61,7 +62,7 @@ public class Write2Excel {
                 cell.setCellValue(entryValue.getValue());
             }
         }
-        FileOutputStream out=new FileOutputStream(url);
+        FileOutputStream out=new FileOutputStream(ConstentConfig.WRITEPATH);
         wb.write(out);
 
 
